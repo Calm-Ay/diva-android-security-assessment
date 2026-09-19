@@ -61,6 +61,7 @@ The compatibility failure was an instrumentation problem in the lab, not an appl
 |---|---|
 | [`REPORT.md`](REPORT.md) | Assessment narrative, evidence, impact, and remediation |
 | [`evidence/findings.md`](evidence/findings.md) | Sanitized proof collected during testing |
+| [`DIVA_Android_Security_Assessment_Report.pdf`](DIVA_Android_Security_Assessment_Report.pdf) | Designed eight-page assessment report for download |
 | [`scripts/`](scripts/) | Frida setup, attach test, and JNI observation scripts |
 | [`index.html`](index.html) | GitHub Pages case study |
 
@@ -74,4 +75,3 @@ Testing was limited to a deliberately vulnerable application on a locally owned 
 
 - Portfolio: [calm-ay.github.io](https://calm-ay.github.io/)
 - GitHub: [@Calm-Ay](https://github.com/Calm-Ay)
-
