@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DIVA Android Security Assessment | Calm Ay</title>
+  <meta name="description" content="Android mobile application security assessment covering insecure storage, SQL injection, exported components, WebView input, JNI secrets, and Frida instrumentation.">
+  <meta property="og:title" content="DIVA Android Security Assessment | Calm Ay">
+  <meta property="og:description" content="Twelve hands-on Android security exercises validated through static and dynamic analysis.">
+  <meta property="og:url" content="https://calm-ay.github.io/diva-android-security-assessment/">
+  <meta property="og:image" content="https://calm-ay.github.io/photo.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23e62020' d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--red:#e62020;--white:#fff;--black:#000;--card:#0d0d0d;--gray:#888;--border:#1c1c1c;--green:#35d07f}
+    html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+    ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#000}::-webkit-scrollbar-thumb{background:var(--red)}
+    nav{position:fixed;inset:0 0 auto;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:18px 50px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    nav a{text-decoration:none}.logo{font-family:'Barlow Condensed';font-weight:900;letter-spacing:3px;color:#fff}.logo span{color:var(--red)}.back{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);font-weight:700}.back:hover{color:#fff}
+    .wrap{max-width:1100px;margin:auto;padding:0 60px}.hero{min-height:100vh;display:flex;align-items:center;padding-top:90px}.label{display:flex;align-items:center;gap:12px;font-size:.68rem;letter-spacing:3px;color:var(--red);text-transform:uppercase;font-weight:700;margin-bottom:26px}.label::before{content:'';width:28px;height:2px;background:var(--red)}
+    h1,h2{font-family:'Barlow Condensed';font-weight:900;text-transform:uppercase;line-height:.9}h1{font-size:clamp(3.7rem,8vw,7rem)}h1 span,h2 span{display:block;color:var(--red)}h2{font-size:clamp(2.5rem,5vw,4.5rem)}
+    .divider{width:50px;height:3px;background:var(--red);margin:24px 0}.sub{color:var(--gray);font-size:.94rem;line-height:1.8;max-width:690px}.tags{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tag{font-size:.58rem;letter-spacing:1.4px;border:1px solid #2a2a2a;color:#aaa;padding:4px 10px;border-radius:2px;font-weight:600}.btn{display:inline-flex;background:var(--red);color:#fff;padding:13px 28px;border-radius:3px;font-size:.78rem;letter-spacing:2px;font-weight:700;text-decoration:none;margin-top:14px}
+    section{padding:82px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);margin-top:35px}.stat{padding:28px 22px;border-right:1px solid var(--border)}.stat:last-child{border:0}.num{font-family:'Barlow Condensed';font-size:2.6rem;font-weight:900;color:var(--red)}.stat p{font-size:.68rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:36px}.card{background:#080808;border:1px solid var(--border);padding:25px;border-radius:3px}.card .k{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px}.card h3{font-size:1rem;margin-bottom:8px}.card p{font-size:.76rem;color:var(--gray);line-height:1.65}
+    .finding{display:grid;grid-template-columns:48px 1fr auto;gap:18px;align-items:start;padding:20px 0;border-bottom:1px solid var(--border)}.finding .n{font-family:'Barlow Condensed';font-weight:900;font-size:1.5rem;color:#444}.finding h3{font-size:.9rem;margin-bottom:5px}.finding p{font-size:.74rem;line-height:1.6;color:var(--gray)}.pill{font-size:.56rem;letter-spacing:1px;color:var(--green);border:1px solid #17462e;padding:4px 8px;white-space:nowrap}
+    .terminal{background:#050505;border:1px solid var(--border);padding:24px;margin-top:30px;color:#aaa;font-family:monospace;font-size:.75rem;line-height:1.8;overflow:auto}.terminal .ok{color:var(--green)}
+    .links{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.links a{border:1px solid #333;color:#fff;padding:12px 20px;text-decoration:none;font-size:.7rem;letter-spacing:1.5px;font-weight:700}.links a:first-child{background:var(--red);border-color:var(--red)}
+    footer{padding:60px 0 35px;border-top:1px solid var(--border)}.footer-name{font-family:'Barlow Condensed';font-size:clamp(3rem,9vw,8rem);font-weight:900;color:transparent;-webkit-text-stroke:1px #2a0000;line-height:1}.copy{font-size:.7rem;color:#444;margin-top:12px}
+    @media(max-width:760px){nav{padding:14px 24px}.wrap{padding:0 24px}.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat{border-bottom:1px solid var(--border)}.grid{grid-template-columns:1fr}.finding{grid-template-columns:36px 1fr}.pill{grid-column:2}.hero{padding-top:110px}}
+  </style>
+</head>
+<body>
+<nav><a class="logo" href="https://calm-ay.github.io"><span>⚡</span> CALM-AY</a><a class="back" href="https://calm-ay.github.io">← Back to Portfolio</a></nav>
+<main>
+  <div class="wrap"><section class="hero"><div>
+    <div class="label">SECURITY PROJECT · MOBILE APPSEC</div>
+    <h1>Android Security<span>Assessment</span></h1>
+    <div class="divider"></div>
+    <div class="tags"><span class="tag">ANDROID</span><span class="tag">FRIDA</span><span class="tag">JADX</span><span class="tag">OWASP MASVS</span><span class="tag">DYNAMIC ANALYSIS</span></div>
+    <p class="sub">A hands-on assessment of DIVA, a deliberately vulnerable Android app. Twelve exercises were validated through source review, ADB testing, component abuse, SQL injection, native analysis, and runtime instrumentation.</p>
+    <a class="btn" href="#results">VIEW ASSESSMENT ↓</a>
+  </div></section></div>
+
+  <div class="wrap"><section id="results">
+    <div class="label">ASSESSMENT AT A GLANCE</div><h2>Proof over<span>claims</span></h2>
+    <div class="stats"><div class="stat"><div class="num">12</div><p>Exercises confirmed</p></div><div class="stat"><div class="num">5</div><p>Security areas</p></div><div class="stat"><div class="num">2</div><p>Analysis modes</p></div><div class="stat"><div class="num">1</div><p>Isolated lab</p></div></div>
+  </section></div>
+
+  <div class="wrap"><section>
+    <div class="label">METHODOLOGY</div><div class="grid">
+      <div class="card"><div class="k">01 · Static</div><h3>Inspect the implementation</h3><p>Reviewed decompiled Java, Android resources, component declarations, and native-library strings to locate trust boundaries and sensitive operations.</p></div>
+      <div class="card"><div class="k">02 · Hypothesis</div><h3>Predict the security failure</h3><p>Converted each code observation into a concrete test: data recovery, crafted input, external component invocation, or runtime observation.</p></div>
+      <div class="card"><div class="k">03 · Dynamic</div><h3>Confirm on the device</h3><p>Used a rooted Genymotion Android 11 emulator, ADB, Android shell tools, and Frida to validate the behavior live.</p></div>
+      <div class="card"><div class="k">04 · Report</div><h3>Preserve proof and remediation</h3><p>Captured sanitized evidence, mapped each issue to an OWASP MASVS area, and documented a practical fix.</p></div>
+    </div>
+  </section></div>
+
+  <div class="wrap"><section>
+    <div class="label">CONFIRMED FINDINGS</div><h2>Twelve exercises<span>validated</span></h2>
+    <div class="finding"><div class="n">01</div><div><h3>Sensitive Logging</h3><p>A submitted payment-card value appeared in Logcat.</p></div><span class="pill">STORAGE</span></div>
+    <div class="finding"><div class="n">02</div><div><h3>Java Hardcoded Secret</h3><p>A plaintext vendor key was extracted from decompiled client code.</p></div><span class="pill">CRYPTO</span></div>
+    <div class="finding"><div class="n">03–06</div><div><h3>Insecure Data Storage</h3><p>Plaintext credentials were recovered from SharedPreferences, SQLite, a private file, and external storage.</p></div><span class="pill">STORAGE</span></div>
+    <div class="finding"><div class="n">07</div><div><h3>SQL Injection</h3><p>A crafted search returned every seeded user record and its sensitive fields.</p></div><span class="pill">CODE</span></div>
+    <div class="finding"><div class="n">08</div><div><h3>Unsafe URI Handling</h3><p>The WebView rendered attacker-controlled HTML from an untrusted URI scheme.</p></div><span class="pill">PLATFORM</span></div>
+    <div class="finding"><div class="n">09–11</div><div><h3>Broken Component Access Control</h3><p>Exported activities and a ContentProvider disclosed protected credentials and private notes.</p></div><span class="pill">PLATFORM</span></div>
+    <div class="finding"><div class="n">12</div><div><h3>Native Hardcoded Secret</h3><p>An ELF string exposed the secret; Frida observed the plaintext JNI argument and successful return value.</p></div><span class="pill">CRYPTO</span></div>
+  </section></div>
+
+  <div class="wrap"><section>
+    <div class="label">RUNTIME INSTRUMENTATION</div><h2>Frida linker issue<span>diagnosed & fixed</span></h2>
+    <p class="sub">Frida 17.7.3 enumerated processes but aborted during injection on the Android 11 x86_64 image. A matching Frida 16.6.6 client/server pair restored attach, Java bridge, and JNI observation.</p>
+    <div class="terminal"><span class="ok">[+] Hook loaded</span><br><span class="ok">[+] DivaJni.access candidate: [REDACTED TRAINING VALUE]</span><br><span class="ok">[+] DivaJni.access return value: 1</span></div>
+    <div class="links"><a href="https://github.com/Calm-Ay/diva-android-security-assessment">VIEW SOURCE ↗</a><a href="https://github.com/Calm-Ay/diva-android-security-assessment/blob/main/REPORT.md">READ REPORT ↗</a></div>
+  </section></div>
+</main>
+<div class="wrap"><footer><div class="footer-name">CALM AY</div><div class="copy">Rasaq Ayomide · Penetration Testing · Application Security</div></footer></div>
+</body>
+</html>
