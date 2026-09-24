@@ -3,36 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>DIVA Android Security Assessment | Calm Ay</title>
+  <title>DIVA Android Security Assessment | 0xC4LM4Y</title>
   <meta name="description" content="Android mobile application security assessment covering insecure storage, SQL injection, exported components, WebView input, JNI secrets, and Frida instrumentation.">
-  <meta property="og:title" content="DIVA Android Security Assessment | Calm Ay">
+  <meta property="og:title" content="DIVA Android Security Assessment | 0xC4LM4Y">
   <meta property="og:description" content="Twelve hands-on Android security exercises validated through static and dynamic analysis.">
   <meta property="og:url" content="https://calm-ay.github.io/diva-android-security-assessment/">
-  <meta property="og:image" content="https://calm-ay.github.io/photo.jpg">
+  <meta property="og:image" content="https://calm-ay.github.io/img/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23e62020' d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2300d4aa' d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    :root{--red:#e62020;--white:#fff;--black:#000;--card:#0d0d0d;--gray:#888;--border:#1c1c1c;--green:#35d07f}
-    html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+    :root{--red:#00d4aa;--white:#e6f2ee;--black:#04070a;--card:#0e1417;--gray:#a7b8b3;--border:#1b2830;--green:#3cf0c6;}
+    html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'JetBrains Mono',sans-serif;overflow-x:hidden}
     ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#000}::-webkit-scrollbar-thumb{background:var(--red)}
     nav{position:fixed;inset:0 0 auto;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:18px 50px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-    nav a{text-decoration:none}.logo{font-family:'Barlow Condensed';font-weight:900;letter-spacing:3px;color:#fff}.logo span{color:var(--red)}.back{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);font-weight:700}.back:hover{color:#fff}
+    nav a{text-decoration:none}.logo{font-family:'Chakra Petch';font-weight:900;letter-spacing:3px;color:#fff}.logo span{color:var(--red)}.back{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);font-weight:700}.back:hover{color:#fff}
     .wrap{max-width:1100px;margin:auto;padding:0 60px}.hero{min-height:100vh;display:flex;align-items:center;padding-top:90px}.label{display:flex;align-items:center;gap:12px;font-size:.68rem;letter-spacing:3px;color:var(--red);text-transform:uppercase;font-weight:700;margin-bottom:26px}.label::before{content:'';width:28px;height:2px;background:var(--red)}
-    h1,h2{font-family:'Barlow Condensed';font-weight:900;text-transform:uppercase;line-height:.9}h1{font-size:clamp(3.7rem,8vw,7rem)}h1 span,h2 span{display:block;color:var(--red)}h2{font-size:clamp(2.5rem,5vw,4.5rem)}
+    h1,h2{font-family:'Chakra Petch';font-weight:900;text-transform:uppercase;line-height:.9}h1{font-size:clamp(3.7rem,8vw,7rem)}h1 span,h2 span{display:block;color:var(--red)}h2{font-size:clamp(2.5rem,5vw,4.5rem)}
     .divider{width:50px;height:3px;background:var(--red);margin:24px 0}.sub{color:var(--gray);font-size:.94rem;line-height:1.8;max-width:690px;overflow-wrap:anywhere}.tags{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tag{font-size:.58rem;letter-spacing:1.4px;border:1px solid #2a2a2a;color:#aaa;padding:4px 10px;border-radius:2px;font-weight:600}.btn{display:inline-flex;background:var(--red);color:#fff;padding:13px 28px;border-radius:3px;font-size:.78rem;letter-spacing:2px;font-weight:700;text-decoration:none;margin-top:14px}
-    section{padding:82px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);margin-top:35px}.stat{padding:28px 22px;border-right:1px solid var(--border)}.stat:last-child{border:0}.num{font-family:'Barlow Condensed';font-size:2.6rem;font-weight:900;color:var(--red)}.stat p{font-size:.68rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:36px}.card{background:#080808;border:1px solid var(--border);padding:25px;border-radius:3px}.card .k{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px}.card h3{font-size:1rem;margin-bottom:8px}.card p{font-size:.76rem;color:var(--gray);line-height:1.65}
-    .finding{display:grid;grid-template-columns:48px 1fr auto;gap:18px;align-items:start;padding:20px 0;border-bottom:1px solid var(--border)}.finding .n{font-family:'Barlow Condensed';font-weight:900;font-size:1.5rem;color:#444}.finding h3{font-size:.9rem;margin-bottom:5px}.finding p{font-size:.74rem;line-height:1.6;color:var(--gray)}.pill{font-size:.56rem;letter-spacing:1px;color:var(--green);border:1px solid #17462e;padding:4px 8px;white-space:nowrap}
-    .terminal{background:#050505;border:1px solid var(--border);padding:24px;margin-top:30px;color:#aaa;font-family:monospace;font-size:.75rem;line-height:1.8;overflow:auto}.terminal .ok{color:var(--green)}
+    section{padding:82px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);margin-top:35px}.stat{padding:28px 22px;border-right:1px solid var(--border)}.stat:last-child{border:0}.num{font-family:'Chakra Petch';font-size:2.6rem;font-weight:900;color:var(--red)}.stat p{font-size:.68rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:36px}.card{background:#0b1116;border:1px solid var(--border);padding:25px;border-radius:3px}.card .k{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px}.card h3{font-size:1rem;margin-bottom:8px}.card p{font-size:.76rem;color:var(--gray);line-height:1.65}
+    .finding{display:grid;grid-template-columns:48px 1fr auto;gap:18px;align-items:start;padding:20px 0;border-bottom:1px solid var(--border)}.finding .n{font-family:'Chakra Petch';font-weight:900;font-size:1.5rem;color:#444}.finding h3{font-size:.9rem;margin-bottom:5px}.finding p{font-size:.74rem;line-height:1.6;color:var(--gray)}.pill{font-size:.56rem;letter-spacing:1px;color:var(--green);border:1px solid #17462e;padding:4px 8px;white-space:nowrap}
+    .terminal{background:#070b0f;border:1px solid var(--border);padding:24px;margin-top:30px;color:#aaa;font-family:monospace;font-size:.75rem;line-height:1.8;overflow:auto}.terminal .ok{color:var(--green)}
     .links{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.links a{border:1px solid #333;color:#fff;padding:12px 20px;text-decoration:none;font-size:.7rem;letter-spacing:1.5px;font-weight:700}.links a:first-child{background:var(--red);border-color:var(--red)}
-    footer{padding:60px 0 35px;border-top:1px solid var(--border)}.footer-name{font-family:'Barlow Condensed';font-size:clamp(3rem,9vw,8rem);font-weight:900;color:transparent;-webkit-text-stroke:1px #2a0000;line-height:1}.copy{font-size:.7rem;color:#444;margin-top:12px}
+    footer{padding:60px 0 35px;border-top:1px solid var(--border)}.footer-name{font-family:'Chakra Petch';font-size:clamp(3rem,9vw,8rem);font-weight:900;color:transparent;-webkit-text-stroke:1px #05231c;line-height:1}.copy{font-size:.7rem;color:#444;margin-top:12px}
     @media(max-width:760px){nav{padding:14px 24px}.wrap{padding:0 24px}h1{font-size:clamp(3rem,15vw,3.35rem)}.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat{border-bottom:1px solid var(--border)}.grid{grid-template-columns:1fr}.finding{grid-template-columns:36px 1fr}.pill{grid-column:2}.hero{padding-top:110px}}
-  </style>
+  
+html{scroll-behavior:smooth}
+body{position:relative}
+body::before{content:"";position:fixed;inset:-50%;z-index:0;pointer-events:none;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");animation:grain 8s steps(6) infinite;mix-blend-mode:overlay}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(0,212,170,.02) 1px,transparent 1px) 0 0/100% 3px;opacity:.5}
+@keyframes grain{0%{transform:translate(0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}to{transform:translate(0)}}
+nav,main,footer{position:relative;z-index:1}
+.hero{position:relative}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(#111a20 1px,transparent 1px),linear-gradient(90deg,#111a20 1px,transparent 1px);background-size:52px 52px;-webkit-mask-image:radial-gradient(ellipse 70% 65% at 30% 45%,#000,transparent 90%);mask-image:radial-gradient(ellipse 70% 65% at 30% 45%,#000,transparent 90%);opacity:.55}
+.logo{display:inline-flex;align-items:center;font-family:'Chakra Petch';font-weight:700;letter-spacing:1px}
+.logo .ldot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);margin-right:9px;animation:pulseDot 2s infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.5}}
+.btn{color:#03120d!important;font-weight:700;border-radius:6px;transition:.2s}
+.btn:hover{box-shadow:0 0 22px rgba(0,212,170,.3);transform:translateY(-2px)}
+.links a:first-child{color:#03120d!important;font-weight:700}
+.links a{border-radius:6px;transition:.18s}.links a:hover{border-color:var(--red);color:var(--red)}
+.tag{border-radius:6px}
+.card{border-radius:10px;transition:.2s}.card:hover{border-color:#2a3d48;transform:translateY(-3px)}
+.pill{border-radius:20px;color:var(--green);border-color:rgba(0,212,170,.3)}
+.stats{border-radius:10px;overflow:hidden}
+.footer-name{-webkit-text-stroke:1px #05231c}
+::selection{background:rgba(0,212,170,.3);color:#fff}
+</style>
 </head>
 <body>
-<nav><a class="logo" href="https://calm-ay.github.io"><span>⚡</span> CALM-AY</a><a class="back" href="https://calm-ay.github.io">← Back to Portfolio</a></nav>
+<nav><a class="logo" href="https://calm-ay.github.io"><span class="ldot"></span>0xC4LM4Y</a><a class="back" href="https://calm-ay.github.io">← Back to Portfolio</a></nav>
 <main>
   <div class="wrap"><section class="hero"><div>
     <div class="label">SECURITY PROJECT · MOBILE APPSEC</div>
@@ -75,6 +97,6 @@
     <div class="links"><a href="https://github.com/Calm-Ay/diva-android-security-assessment">VIEW SOURCE ↗</a><a href="https://github.com/Calm-Ay/diva-android-security-assessment/blob/main/REPORT.md">READ REPORT ↗</a><a href="./DIVA_Android_Security_Assessment_Report.pdf" download>DOWNLOAD PDF ↓</a></div>
   </section></div>
 </main>
-<div class="wrap"><footer><div class="footer-name">CALM AY</div><div class="copy">Rasaq Ayomide · Penetration Testing · Application Security</div></footer></div>
+<div class="wrap"><footer><div class="footer-name">0xC4LM4Y</div><div class="copy">Rasaq Ayomide · Penetration Testing · Application Security</div></footer></div>
 </body>
 </html>
